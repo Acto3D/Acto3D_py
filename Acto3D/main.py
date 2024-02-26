@@ -18,6 +18,7 @@ def is_Acto3D_running():
     try:
         output = subprocess.check_output(['pgrep', 'Acto3D'], text=True)
         return bool(output.strip())
+    
     except subprocess.CalledProcessError:
         return False
 
@@ -32,7 +33,10 @@ def openActo3D() -> bool:
                 while not is_Acto3D_running():
                     print("Waiting for Acto3D launching...")
                     time.sleep(0.5)
+                    
+                time.sleep(2.0)
                 return True
+            
             except Exception as e:
                 print(f"Failed to launch {config.path_to_Acto3D}: {e}")
                 return False
@@ -57,12 +61,21 @@ def is_version_compatible(version_string, min_version) -> bool:
     
     if (major, minor, patch) < (min_major, min_minor, min_patch):
         return False
+    
     return True
 
-def transfer(layers: Union[napari.layers.Layer, LayerList, list]):
-    check_layers_structure(layers, False)
+def transfer(layers: Union[napari.layers.Layer, LayerList, list], remote: bool = False):
+    """
+    Transfer napari Layer(s) to Acto3D.
+    
+    Parameters:
+    - layers: A single napari.layers.Layer object, a napari.components.layerlist.LayerList, 
+              or a list containing napari.layers.Layer objects.
+    - remote: Transfer to remote Acto3D. (Default is false.)
+    """
+    check_layers_structure(layers, onlyCheck=False, remoteClient=remote)
 
-def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], onlyCheck: bool = True) -> str:
+def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], onlyCheck: bool = True, remote: bool = False) -> str:
     """
     Checks the structure of napari Layer(s) and returns a message describing the structure.
     
@@ -70,6 +83,7 @@ def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], 
     - layers: A single napari.layers.Layer object, a napari.components.layerlist.LayerList, 
               or a list containing napari.layers.Layer objects.
     - onlyCheck: Just check whether layers are compatible with Acto3D.
+    - remote: Transfer to remote Acto3D.
     
     Returns:
     - A string message describing the structure of the input layers.
@@ -97,8 +111,8 @@ def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], 
                 print("Compatible with Acto3D.")
                 
                 if (onlyCheck == False):
-                    openActo3D()
-                    time.sleep(2)
+                    if (remote == False):
+                       openActo3D()
                     transferZYX(layer)
                 
             elif len(shape) == 4 and shape[1] <= 4:
@@ -106,8 +120,8 @@ def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], 
                 print("Compatible with Acto3D.")
                 
                 if (onlyCheck == False):
-                    openActo3D()
-                    time.sleep(2)
+                    if (remote == False):
+                       openActo3D()
                     transferZCYX(layer)
                 
             else:
@@ -131,8 +145,8 @@ def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], 
                 print("Compatible with Acto3D.")
                 
                 if (onlyCheck == False):
-                    openActo3D()
-                    time.sleep(2)
+                    if (remote == False):
+                       openActo3D()
                     transferLZYX(layers)
                 
             else:
