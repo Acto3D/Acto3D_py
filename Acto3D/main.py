@@ -73,7 +73,7 @@ def transfer(layers: Union[napari.layers.Layer, LayerList, list], remote: bool =
               or a list containing napari.layers.Layer objects.
     - remote: Transfer to remote Acto3D. (Default is false.)
     """
-    check_layers_structure(layers, onlyCheck=False, remoteClient=remote)
+    check_layers_structure(layers, onlyCheck=False, remote=remote)
 
 def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], onlyCheck: bool = True, remote: bool = False) -> str:
     """
