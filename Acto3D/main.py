@@ -8,8 +8,8 @@ import struct
 from typing import Union, List, Tuple
 
 from tqdm import tqdm  # Assuming tqdm is installed and imported for progress indication
-import napari
-from napari.components import LayerList
+# import napari
+# from napari.components import LayerList
 
 from .config import config  # 設定インスタンスをインポート
 
@@ -65,7 +65,8 @@ def is_version_compatible(version_string, min_version) -> bool:
     
     return True
 
-def transfer(layers: Union[napari.layers.Layer, LayerList, list], remote: bool = False):
+# def transfer(layers: Union[napari.layers.Layer, LayerList, list], remote: bool = False):
+def transfer(layers, remote: bool = False):
     """
     Transfer napari Layer(s) to Acto3D.
     
@@ -76,7 +77,8 @@ def transfer(layers: Union[napari.layers.Layer, LayerList, list], remote: bool =
     """
     check_layers_structure(layers, onlyCheck=False, remote=remote)
 
-def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], onlyCheck: bool = True, remote: bool = False) -> str:
+# def check_layers_structure(layers: Union[napari.layers.Layer, LayerList, list], onlyCheck: bool = True, remote: bool = False) -> str:
+def check_layers_structure(layers, onlyCheck: bool = True, remote: bool = False) -> str:
     """
     Checks the structure of napari Layer(s) and returns a message describing the structure.
     
