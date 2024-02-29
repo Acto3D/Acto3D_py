@@ -15,6 +15,46 @@ Once installed, you can import and use the package in your project as follows:
 import Acto3D as a3d
 ```
 
+# Sample code
+```Python
+import tifffile
+import numpy as np
+import Acto3D as a3d
+
+# Load multichannel, zstack tif.
+image = tifffile.imread('./image.tif')
+
+# `image` is object of numpy.ndarray 
+# type(image)
+# numpy.ndarray
+
+image.shape
+# (664, 3, 1344, 1344)
+# In this case, channel order is ZCYX.
+
+# Transfer image data to Acto3D.
+# Specify the dimension order correctly. 
+a3d.transferImage(image, order='ZCYX')
+
+# Also you can set display ranges as [[min, max], ...].
+a3d.transferImage(image, order='ZCYX', display_ranges=[[500,2000],[500,2000],[500,2000]])
+
+# Set voxel size for isotropic view
+a3d.setVoxelSize(1.4, 1.4, 3.2, 'micron')
+
+# Set zoom value
+a3d.setScale(1.5)
+
+# Set slice no
+a3d.setSlice(450)
+
+# Get the current image
+current_image = a3d.getCurrentSlice()
+
+
+```
+
+
 # Sample code for napari
 ```Python
 import tifffile

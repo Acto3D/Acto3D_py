@@ -13,6 +13,7 @@ def get_version():
 setup(
     name='Acto3D', 
     version=get_version(),
+    # version='0.1.3',
     install_requires=["numpy", "tqdm"],
     description="Preview ndarray in 3D with Acto3D (MacOS App)", 
     author='Naoki Takeshita', 
