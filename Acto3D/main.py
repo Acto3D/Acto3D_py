@@ -5,7 +5,8 @@ import time
 import numpy as np
 import socket
 import struct
-from typing import Union, List
+from typing import Union, List, Tuple
+
 from tqdm import tqdm  # Assuming tqdm is installed and imported for progress indication
 import napari
 from napari.components import LayerList
@@ -316,3 +317,166 @@ def transferZCYX(layer):
         else:
             s.sendall(b"ERROR")  # エラーコードをサーバーに送信
             # ここで通信終了などのエラーハンドリング
+
+def transferImage(image: np.ndarray, order:str = 'ZCYX', display_ranges:List[Tuple[int, int]]=[]):
+    """
+    Transfers image data to Acto3D.
+
+    This function transfers a specified 4- or 3-dimensional NumPy array image to Acto3D. 
+    The image is rearranged according to the specified order and normalized based on the display range for each channel.
+
+    Parameters:
+    - image: np.ndarray
+        The image data to be transferred. A 4-dimensional or 3-dimensional NumPy array is expected.
+    - order: str, optional
+        The order of axes in the image data. The default is 'ZCYX'.
+    - display_ranges: List[Tuple[int, int]], optional
+        A list of display ranges for each channel. Each tuple is in the form of (min, max).
+        If not specified, [0, 255] is used for uint8 images, and [0, 65535] for others.
+
+    Returns:
+    - None
+    """
+    print('=== Transfer image data to Acto3D ===')
+    print('Image shape:', image.shape)
+    print('Data type:', image.dtype)
+    print('Order:', order)
+    
+    
+    if(len(order) != len(image.shape)):
+        print('Please specify order correctly.')
+        return
+    
+    order_indices = None
+    x_index = None
+    y_index = None
+    z_index = None
+    c_index = None
+    
+    if len(order) == 3:
+        order_indices = {axis: order.index(axis) for axis in "XYZ"}
+        x_index = order_indices["X"]
+        y_index = order_indices["Y"]
+        z_index = order_indices["Z"]
+        
+    elif len(order) == 4:
+        order_indices = {axis: order.index(axis) for axis in "XYZC"}
+        x_index = order_indices["X"]
+        y_index = order_indices["Y"]
+        z_index = order_indices["Z"]
+        c_index = order_indices["C"]
+        
+    
+    print('X channel:', x_index)
+    print('Y channel:', y_index)
+    print('Z channel:', z_index)
+    print('C channel:', c_index)
+    
+    
+    depth, height, width = image.shape[z_index], image.shape[y_index], image.shape[x_index]
+    
+    channel = 1 if c_index is None else image.shape[c_index]
+    
+    print(f'Width: {width}, Height: {height}, Depth: {depth}, Channel: {channel}')
+    
+    
+    displayRanges = []
+    
+    if(len(display_ranges) == 0):
+        for c in range(channel):
+                displayRanges.append([0, 255 if image.dtype == np.uint8 else 65535])
+                
+        print("Use default display ranges:", displayRanges)
+    else:
+        if(len(display_ranges) == channel):
+            displayRanges = display_ranges
+            print("Use user defined display ranges:", displayRanges)
+            
+        else:
+            print("Invalid display ranges:", display_ranges)
+            return
+    
+    
+    print('\nStart connection.')
+    
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((config.host, config.port))
+        
+        # Send start signal
+        start_signal = b'START'
+        s.sendall(start_signal)
+        
+        # Recieve version info
+        version_info = s.recv(1024).decode('utf-8')
+        print(f"Received Acto3D version: {version_info}")
+        
+        if is_version_compatible(version_info, min_version='1.7.0'):
+            rearranged_indices = []
+            rearranged_indices2 = []
+            
+            if(c_index == None):    
+                s.sendall(b'ZYX__')  
+                s.sendall(struct.pack('III', depth, height, width))  
+                
+                rearranged_indices = [y_index, x_index]
+                    
+                if(x_index > z_index):
+                    x_index -= 1
+                if(y_index > z_index):
+                    y_index -= 1
+                rearranged_indices2 = [y_index, x_index]
+                
+            else:
+                s.sendall(b'ZCYX_')  
+                s.sendall(struct.pack('IIII', depth, channel, height, width))  
+                
+                rearranged_indices = [c_index, y_index, x_index]
+                    
+                if(c_index > z_index):
+                    c_index -= 1
+                if(x_index > z_index):
+                    x_index -= 1
+                if(y_index > z_index):
+                    y_index -= 1
+                rearranged_indices2 = [c_index, y_index, x_index]
+                
+            
+            normalized_image = np.zeros((channel, height, width), dtype=np.float32) if c_index is not None else np.zeros((height, width), dtype=np.float32)
+            scaled_data = np.zeros((channel, height, width), dtype=np.uint8) if c_index is not None else np.zeros((height, width), dtype=np.uint8)
+            print("Re-arranged shape:" ,normalized_image.shape)
+            
+            for z in tqdm(range(depth)):
+                slice_data = np.take(image, z, axis=z_index)
+                
+                rearranged_data = np.transpose(slice_data, rearranged_indices2)
+                
+                for c in range(channel):  # チャンネル数
+                    min_val, max_val = displayRanges[c]
+                    
+                    # Normalize image data with display ranges.
+                    # Clip the data within 0-255, 8 bits image.
+                    if(c_index == None):
+                        normalized_image[:, :] = (rearranged_data[:, :].astype(np.float32) - min_val) / (max_val - min_val)
+                        scaled_data[:, :] = (np.clip(normalized_image[:, :] * 255, 0, 255)).astype(np.uint8)
+                    else:
+                        normalized_image[c, :, :] = (rearranged_data[c, :, :].astype(np.float32) - min_val) / (max_val - min_val)
+                        scaled_data[c, :, :] = (np.clip(normalized_image[c, :, :] * 255, 0, 255)).astype(np.uint8)
+                    
+                    # gamma_adjusted_data = normalized_data ** gamma
+    
+                    
+                
+                s.sendall(scaled_data.tobytes())
+                
+                
+            end_signal = b'END'
+            s.sendall(end_signal)
+            
+            print('=== Transfer Completed ===')
+            
+        else:
+            print("Error")
+            print("Please update Acto3D.")
+            s.sendall(b"ERROR")  
+        
+    return
