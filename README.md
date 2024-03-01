@@ -2,6 +2,19 @@
 Python package for transferring napari image layer (ndarray data) to Acto3D, a MacOS app.
 
 
+The Acto3D_py package facilitates the transfer of image data (**numpy.ndarray data**) to Acto3D.  
+This package enables integration between Python-based image processing workflows and Acto3D's advanced 3D visualization capabilities.  
+However, it's important to note that the current set of functionalities available through this method is limited.  
+Additionally, while input from a remote PC is supported, users should be aware that the communication speed may be much slower than local working.
+
+## Requirements
+Before using Acto3D_py, ensure that you have Acto3D version 1.7.0 or higher installed on your MacOS system.  
+This is essential for compatibility with the package's features.  
+
+While Acto3D is a MacOS application, it's worth noting that when used remotely, the package itself is not bound by the operating system of the client.  
+This means that regardless of the client's operating system, as long as there is network accessibility, users can interact with Acto3D on a MacOS remotely, enabling cross-platform compatibility for remote operations.
+
+
 # Installation Instructions for Acto3D_py
 You can install Acto3D_py directly from the GitHub repository using pip with the following command:
 
