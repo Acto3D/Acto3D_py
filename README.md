@@ -26,6 +26,22 @@ Once installed, you can import and use the package in your project as follows:
 import Acto3D as a3d
 ```
 
+## Acto3D External Connection Feature Notice
+
+When using Acto3D, be aware that **TCP-based data transmission is turned off by default**.  
+To enable this feature, navigate through the menu: [Connection] > [Enable external connection]
+
+Please note the following important points regarding this functionality:
+
+- **Data transmission is not encrypted.** This functionality is primarily intended for operations within your local PC. If you use this feature, keep in mind that data sent or received is not protected.
+
+- **Performance considerations for remote transmissions:** Sending and receiving data remotely is not optimized for parallel processing and may result in slower performance from remote PCs.  
+However, we have plans in place to address this issue and improve performance in future updates.
+
+- **Avoid exposing ports publicly.** Given that the data transfer is not encrypted, exposing your ports to the external network could pose significant security risks. Do not make your ports publicly accessible.
+
+<img sec="./img/enable_feature.png">
+
 # Sample code
 ```Python
 import tifffile
@@ -61,8 +77,14 @@ a3d.setSlice(450)
 
 # Get the current image
 current_image = a3d.getCurrentSlice()
+```
 
+If you want to transfer binary data to remote Acto3D, you should specify the remote address.
+```Python
+import Acto3D as a3d
 
+a3d.config.host = '<YOUR REMOTE IP ADDRESS>'
+# You can check the IP address at [Acto3D] > [Connection]
 ```
 
 
