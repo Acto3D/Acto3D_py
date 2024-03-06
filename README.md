@@ -13,7 +13,7 @@ While Acto3D is a MacOS application, it's worth noting that when used remotely, 
 This means that regardless of the client's operating system, as long as there is network accessibility, users can interact with Acto3D on a MacOS remotely, enabling cross-platform compatibility for remote operations.
 
 
-# Installation Instructions for Acto3D_py
+## Installation Instructions for Acto3D_py
 You can install Acto3D_py directly from the GitHub repository using pip with the following command:
 
 ```bash
@@ -26,7 +26,7 @@ Once installed, you can import and use the package in your project as follows:
 import Acto3D as a3d
 ```
 
-## Acto3D External Connection Feature Notice
+### Acto3D External Connection Feature Notice
 
 When using this package, be aware that **TCP-based data transmission is turned off by default**.  
 To enable this feature, navigate through the menu: [Connection] > [Enable external connection]
@@ -42,7 +42,7 @@ However, we have plans in place to address this issue and improve performance in
 
 <img src="./img/enable_feature.png" width = 600>
 
-# Sample code
+## Sample code
 ```Python
 import tifffile
 import numpy as np
@@ -88,7 +88,7 @@ a3d.config.host = '<YOUR REMOTE IP ADDRESS>'
 ```
 
 
-# Sample code for napari
+## Sample code for napari
 ```Python
 import tifffile
 import napari
