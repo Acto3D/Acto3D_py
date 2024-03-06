@@ -28,7 +28,7 @@ import Acto3D as a3d
 
 ## Acto3D External Connection Feature Notice
 
-When using Acto3D, be aware that **TCP-based data transmission is turned off by default**.  
+When using this package, be aware that **TCP-based data transmission is turned off by default**.  
 To enable this feature, navigate through the menu: [Connection] > [Enable external connection]
 
 Please note the following important points regarding this functionality:
