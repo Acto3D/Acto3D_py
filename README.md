@@ -40,7 +40,7 @@ However, we have plans in place to address this issue and improve performance in
 
 - **Avoid exposing ports publicly.** Given that the data transfer is not encrypted, exposing your ports to the external network could pose significant security risks. Do not make your ports publicly accessible.
 
-<img sec="./img/enable_feature.png">
+<img src="./img/enable_feature.png" width = 600>
 
 # Sample code
 ```Python
