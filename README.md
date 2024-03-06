@@ -139,11 +139,12 @@ a3d.check_layers_structure([viewer.layers[0]], viewer.layers[1])
 
 
 # You can now transfer them to Acto3D.
-a3d.transfer(viewer.layers)
+a3d.transferLayers(viewer.layers)
+
 # Or for specific layers:
-a3d.transfer([viewer.layers[0],viewer.layers[1]])
+a3d.transferLayers([viewer.layers[0],viewer.layers[1]])
 
 ```
 
-# Compatible layer structure
+### Compatible layer structure
 For napari's image layers, the ndarray's shape must be ZCYX (where C is between 2-4) or ZYX for individual layers, or a list of ZYX layers. When grouping layers into a list, all layers must have identical shapes.
