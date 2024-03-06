@@ -13,7 +13,7 @@ While Acto3D is a MacOS application, it's worth noting that when used remotely, 
 This means that regardless of the client's operating system, as long as there is network accessibility, users can interact with Acto3D on a MacOS remotely, enabling cross-platform compatibility for remote operations.
 
 
-## Installation Instructions for Acto3D_py
+## Installation
 You can install Acto3D_py directly from the GitHub repository using pip with the following command:
 
 ```bash
