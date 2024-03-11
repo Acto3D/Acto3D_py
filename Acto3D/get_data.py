@@ -83,7 +83,7 @@ def getCurrentZScale():
         print("Failed")
         
 
-def getSliceImage(slice_no: int, target_size: int = 512, reflesh_view: bool = False):
+def getSliceImage(slice_no: int, target_size: int = 512, refresh_view: bool = False):
     """
     Retrieves the image for a specified slice.
 
@@ -103,7 +103,7 @@ def getSliceImage(slice_no: int, target_size: int = 512, reflesh_view: bool = Fa
         cmd = 'getSliceImage'
         send_command_to_server(s, cmd)  
         
-        args = struct.pack('II?', slice_no, target_size, reflesh_view)
+        args = struct.pack('II?', slice_no, target_size, refresh_view)
         s.sendall(args)
         
         # Calculate the total size of the image data
