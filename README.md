@@ -1,17 +1,10 @@
 # Acto3D_py
-Acto3D_py is a python package for transferring image data(**numpy.ndarray data**) to Acto3D.
+Acto3D_py is a Python package designed for transferring image data (***numpy.ndarray data***) to Acto3D, facilitating the integration of Python-based image processing workflows with Acto3D's 3D visualization tools.  
+Note that functionality is currently limited, and remote input may experience slower communication speeds than local operations.
 
-This package enables integration between Python-based image processing workflows and Acto3D's advanced 3D visualization capabilities.  
-However, it's important to note that the current set of functionalities available through this method is limited.  
-Additionally, while input from a remote PC is supported, users should be aware that the communication speed may be much slower than local working.
 
 ## Requirements
-Before using Acto3D_py, ensure that you have Acto3D version 1.7.0 or higher installed on your MacOS system.  
-This is essential for compatibility with the package's features.  
-
-While Acto3D is a MacOS application, it's worth noting that when used remotely, the package itself is not bound by the operating system of the client.  
-This means that regardless of the client's operating system, as long as there is network accessibility, users can interact with Acto3D on a MacOS remotely, enabling cross-platform compatibility for remote operations.
-
+To use Acto3D_py, **Acto3D version 1.7.0** or newer must be installed on your MacOS system. Though Acto3D is a MacOS app, the package supports cross-platform remote interaction via network, allowing users on any operating system to work with Acto3D remotely.
 
 ## Installation
 You can install Acto3D_py directly from the GitHub repository using pip with the following command:
@@ -35,8 +28,7 @@ Please note the following important points regarding this functionality:
 
 - **Data transmission is not encrypted.** This functionality is primarily intended for operations within your local PC. If you use this feature, keep in mind that data sent or received is not protected.
 
-- **Performance considerations for remote transmissions:** Sending and receiving data remotely is not optimized for parallel processing and may result in slower performance from remote PCs.  
-However, we have plans in place to address this issue and improve performance in future updates.
+- **Performance considerations for remote transmissions:** Sending and receiving data remotely may result in slower performance from remote PCs. 
 
 - **Avoid exposing ports publicly.** Given that the data transfer is not encrypted, exposing your ports to the external network could pose significant security risks. Do not make your ports publicly accessible.
 
@@ -56,15 +48,42 @@ image = tifffile.imread('./image.tif')
 # numpy.ndarray
 
 image.shape
+# For an image with multiple channels,
 # (664, 3, 1344, 1344)
 # In this case, channel order is ZCYX.
+
+# For a single-channel image, the shape 
+# (664, 1344, 1344)
+# In this case, the channel order is ZYX.
 
 # Transfer image data to Acto3D.
 # Specify the dimension order correctly. 
 a3d.transferImage(image, order='ZCYX')
 
 # Also you can set display ranges as [[min, max], ...].
+# If you want to specify display ranges or gammas, please create a list with an entry for each channel.
+a3d.transferImage(image, order='ZYX', display_ranges=[[500,2000]], gammas=[0.8])
 a3d.transferImage(image, order='ZCYX', display_ranges=[[500,2000],[500,2000],[500,2000]])
+a3d.transferImage(image, order='ZCYX', display_ranges=[[500,2000],[500,2000],[500,2000]], gammas=[1.0, 0.9, 1.0])
+
+# -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# 
+# If you're working with napari, layer.data is a numpy.ndarray,
+# which means it can be transferred as follows:
+a3d.transferImage(viewer.layers[0].data, order='ZYX')
+a3d.transferImage(viewer.layers[0].data, order='ZCYX')
+
+# It appears that frequently accessing layer.data in napari can lead to performance degradation. 
+# If there is enough memory available, specifying as follows can sometimes improve speed.
+a3d.transferImage(viewer.layers[0].data.copy(), order='ZYX')
+
+# Furthermore, since display ranges can be obtained with layers.contrast_limits and gamma with layers.gamma, 
+# you can use these values as well. 
+# However, by using a3d.check_layers_structure(layers), 
+# it's also possible to transfer and apply these values 
+# (please refer to the following section for more details).
+# 
+# -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 # Set voxel size for isotropic view
 a3d.setVoxelSize(1.4, 1.4, 3.2, 'micron')

@@ -1,9 +1,11 @@
 # /Acto3D/__init__.py
 from .config import config
 import os
-from .main import openActo3D, check_layers_structure, transferLayers, transferImage, setVoxelSize, setSlice, setScale, getCurrentSlice, is_version_compatible
+from .main import openActo3D, check_layers_structure, transferLayers, transferImage, is_version_compatible
+from .get_data import getCurrentSliceNo, getCurrentScale, getCurrentZScale, getCurrentImage, getSliceImage
+from .set_data import setVoxelSize, setSlice, setScale, setZScale
 
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 
 
 # オプショナル: パッケージをインポートした際に表示するメッセージ（デバッグや情報提供用）
